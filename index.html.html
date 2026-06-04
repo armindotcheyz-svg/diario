@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Armindo Domingos Zongo — Diário de Notícias</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Serif+4:ital,wght@0,300;0,400;0,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0e0e0e;--paper:#f5f0e8;--cream:#ede8db;
+  --red:#c0392b;--gold:#b5922a;--grey:#6b6560;--lgrey:#d4cfc5;
+}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',serif;font-size:17px;line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+
+/* TOP BAR */
+.topbar{background:var(--ink);color:var(--paper);display:flex;justify-content:space-between;align-items:center;padding:.35rem 2rem;font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.08em}
+.topbar a{color:rgba(255,255,255,.55);margin-left:1rem;transition:color .2s}
+.topbar a:hover{color:#fff}
+
+/* HEADER */
+header{background:var(--paper);padding:1.5rem 2rem 0;text-align:center;border-bottom:3px double var(--ink)}
+
+/* LOGÓTIPO */
+.logo-area{cursor:pointer;display:inline-block;margin-bottom:1.2rem;transition:opacity .2s}
+.logo-area:hover{opacity:.88}
+.logo-svg{width:clamp(300px,72vw,520px);height:auto;display:block;margin:0 auto;filter:drop-shadow(0 3px 12px rgba(0,0,0,.22))}
+
+/* NAV BAR */
+.nav-bar{display:flex;align-items:center;justify-content:center;border-top:1px solid var(--lgrey);padding:.3rem 1rem;min-height:44px;position:relative}
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;background:none;border:1.5px solid var(--ink);border-radius:3px;padding:8px 10px;cursor:pointer;position:absolute;left:1rem;top:50%;transform:translateY(-50%);z-index:10;transition:background .2s}
+.hamburger span{display:block;width:22px;height:2px;background:var(--ink);border-radius:2px;transition:transform .3s,opacity .3s}
+.hamburger.open{background:var(--ink);border-color:var(--ink)}
+.hamburger.open span{background:var(--paper)}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+#nav-desktop{display:flex;justify-content:center;flex-wrap:wrap;gap:.1rem}
+#nav-desktop a{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.28rem .8rem;border-radius:2px;cursor:pointer;transition:background .2s,color .2s;white-space:nowrap;user-select:none}
+#nav-desktop a:hover{background:var(--ink);color:var(--paper)}
+#nav-desktop a.ativo{background:var(--red);color:var(--paper)}
+#nav-desktop .n-vid{color:var(--red);font-weight:500}
+#nav-desktop .n-vid:hover{background:var(--red);color:var(--paper)}
+
+/* MENU LATERAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200}
+.overlay.open{display:block}
+.menu-lat{position:fixed;top:0;left:0;width:290px;max-width:88vw;height:100vh;background:var(--paper);z-index:300;transform:translateX(-100%);transition:transform .32s cubic-bezier(.4,0,.2,1);overflow-y:auto;box-shadow:4px 0 28px rgba(0,0,0,.18)}
+.menu-lat.open{transform:translateX(0)}
+.m-head{background:var(--ink);color:var(--paper);display:flex;justify-content:space-between;align-items:center;padding:1rem 1.2rem;position:sticky;top:0;z-index:1}
+.m-titulo{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase}
+.m-close{background:none;border:none;color:var(--paper);font-size:1.1rem;cursor:pointer;padding:.2rem .5rem;border-radius:2px;transition:background .2s}
+.m-close:hover{background:rgba(255,255,255,.15)}
+.m-sec{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--grey);padding:.9rem 1.2rem .35rem}
+.m-item{display:flex;align-items:center;gap:.7rem;padding:.75rem 1.2rem;font-family:'Source Serif 4',serif;font-size:.98rem;color:var(--ink);cursor:pointer;border-left:3px solid transparent;transition:background .15s,color .15s,border-color .15s;user-select:none}
+.m-item:hover{background:var(--cream);border-left-color:var(--red);color:var(--red)}
+.m-vid{color:var(--red);font-weight:600}
+.m-div{height:1px;background:var(--lgrey);margin:.4rem 0}
+
+/* TICKER */
+.ticker{background:var(--red);color:#fff;display:flex;align-items:center;overflow:hidden;height:2.2rem}
+.tick-label{background:#8b1a12;padding:0 1.1rem;height:100%;display:flex;align-items:center;font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;white-space:nowrap;flex-shrink:0}
+.tick-track{display:flex;animation:ticker 38s linear infinite;white-space:nowrap}
+.tick-track span{font-family:'Source Serif 4',serif;font-size:.82rem;padding:0 2.5rem}
+.tick-track span::after{content:'·';padding-left:2.5rem}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* MAIN */
+main{max-width:1300px;margin:0 auto;padding:2.5rem 2rem}
+
+/* SECTION LABEL */
+.slabel{font-family:'DM Mono',monospace;font-size:.63rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);border-top:2px solid var(--red);padding-top:.45rem;margin-bottom:1.4rem;display:inline-block}
+
+/* LEAD */
+.lead-sec{display:grid;grid-template-columns:1fr 330px;gap:2.5rem;border-bottom:1px solid var(--lgrey);padding-bottom:2.5rem;margin-bottom:2.5rem}
+.lead-img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;margin-bottom:1.1rem;cursor:pointer}
+.lead-cat{font-family:'DM Mono',monospace;font-size:.63rem;letter-spacing:.15em;text-transform:uppercase;color:var(--red);margin-bottom:.55rem}
+.lead-title{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3.2vw,2.7rem);font-weight:700;line-height:1.15;margin-bottom:.75rem;cursor:pointer;transition:color .2s}
+.lead-title:hover{color:var(--red)}
+.lead-deck{font-size:1.02rem;color:var(--grey);line-height:1.65;font-weight:300;margin-bottom:.9rem;max-width:62ch}
+.lead-meta{font-family:'DM Mono',monospace;font-size:.63rem;color:var(--grey);display:flex;gap:1rem}
+.lead-meta .au{color:var(--ink);font-weight:500}
+.btn-ler{display:inline-block;margin-top:1.1rem;font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--paper);background:var(--ink);padding:.5rem 1.2rem;border:none;cursor:pointer;transition:background .2s}
+.btn-ler:hover{background:var(--red)}
+
+/* SIDEBAR */
+.sidebar{border-left:1px solid var(--lgrey);padding-left:1.8rem}
+.sb-item{padding-bottom:1.1rem;margin-bottom:1.1rem;border-bottom:1px solid var(--cream);cursor:pointer}
+.sb-item:last-child{border-bottom:none;margin-bottom:0}
+.sb-num{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;color:var(--lgrey);line-height:1;margin-bottom:.25rem}
+.sb-cat{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:.25rem}
+.sb-title{font-family:'Playfair Display',serif;font-size:.97rem;font-weight:700;line-height:1.3;transition:color .2s}
+.sb-item:hover .sb-title{color:var(--red)}
+.sb-time{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--grey);margin-top:.25rem}
+
+/* CARDS GRID */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;margin-bottom:2.5rem}
+.card{cursor:pointer}
+.card-img{width:100%;aspect-ratio:3/2;object-fit:cover;display:block;margin-bottom:.75rem;transition:opacity .3s}
+.card:hover .card-img{opacity:.88}
+.card-cat{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:.35rem}
+.card-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;line-height:1.25;margin-bottom:.45rem;transition:color .2s}
+.card:hover .card-title{color:var(--red)}
+.card-exc{font-size:.86rem;color:var(--grey);line-height:1.55;font-weight:300}
+.card-meta{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--grey);margin-top:.45rem}
+
+/* CAT HEADER */
+.cat-hdr{border-bottom:3px solid var(--ink);padding-bottom:.9rem;margin-bottom:2rem}
+.cat-hdr h2{font-family:'Playfair Display',serif;font-size:clamp(1.9rem,5vw,3.2rem);font-weight:900;text-transform:uppercase}
+.cat-hdr h2 span{color:var(--red);font-style:italic}
+
+/* ARTIGO */
+.art-view{max-width:780px;margin:0 auto}
+.art-back{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--grey);cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;margin-bottom:1.8rem;border-bottom:1px solid transparent;padding-bottom:2px;transition:color .2s,border-color .2s}
+.art-back:hover{color:var(--red);border-color:var(--red)}
+.art-cat{font-family:'DM Mono',monospace;font-size:.63rem;letter-spacing:.15em;text-transform:uppercase;color:var(--red);margin-bottom:.75rem}
+.art-title{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,4vw,2.8rem);font-weight:700;line-height:1.15;margin-bottom:.9rem}
+.art-resumo{font-size:1.12rem;color:var(--grey);font-weight:300;line-height:1.7;border-left:3px solid var(--red);padding-left:1.1rem;margin-bottom:1.4rem}
+.art-meta{font-family:'DM Mono',monospace;font-size:.63rem;color:var(--grey);display:flex;gap:1.5rem;padding:1rem 0;border-top:1px solid var(--lgrey);border-bottom:1px solid var(--lgrey);margin-bottom:1.4rem}
+.art-meta .au{color:var(--ink);font-weight:500}
+.art-img{width:100%;max-height:460px;object-fit:cover;display:block;margin-bottom:1.8rem}
+.art-body{font-size:1.06rem;line-height:1.85;color:#1a1a1a}
+.art-body p{margin-bottom:1.35rem}
+
+/* STATS */
+.stats{background:var(--ink);color:var(--paper);display:grid;grid-template-columns:repeat(4,1fr);text-align:center;padding:1.7rem 2rem;margin-bottom:2.5rem}
+.stat{border-right:1px solid rgba(255,255,255,.1);padding:0 1rem}
+.stat:last-child{border-right:none}
+.stat-n{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--gold);line-height:1;margin-bottom:.25rem}
+.stat-l{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+
+/* NEWSLETTER */
+.nl{background:var(--cream);border:1px solid var(--lgrey);padding:2.3rem;text-align:center;margin-bottom:2.5rem}
+.nl h3{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:700;margin-bottom:.35rem}
+.nl p{color:var(--grey);font-size:.9rem;margin-bottom:1.1rem;font-weight:300}
+.nl-form{display:flex;max-width:440px;margin:0 auto}
+.nl-form input{flex:1;border:1px solid var(--ink);border-right:none;padding:.62rem 1rem;font-family:'Source Serif 4',serif;font-size:.9rem;background:var(--paper);color:var(--ink);outline:none}
+.nl-form button{background:var(--ink);color:var(--paper);border:1px solid var(--ink);padding:.62rem 1.3rem;font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s}
+.nl-form button:hover{background:var(--red);border-color:var(--red)}
+
+/* VÍDEOS */
+.vid-player-box{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;background:#000;margin-bottom:1rem}
+.vid-player-box iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+.vid-thumb{position:relative;aspect-ratio:16/9;background:#111;overflow:hidden;margin-bottom:.75rem;cursor:pointer}
+.vid-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s}
+.vid-thumb:hover img{opacity:.8}
+.vid-play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);transition:background .2s}
+.vid-thumb:hover .vid-play-btn{background:rgba(192,57,43,.55)}
+.vid-play-btn div{width:46px;height:46px;background:rgba(255,255,255,.95);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.vid-dur{position:absolute;bottom:6px;right:7px;background:rgba(0,0,0,.8);color:#fff;font-family:'DM Mono',monospace;font-size:.58rem;padding:2px 5px;border-radius:2px}
+
+/* SOBRE NÓS */
+.sobre-card{border:1px solid var(--lgrey);padding:2.3rem;margin:1.8rem 0;background:var(--cream)}
+.sobre-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#1a1a2e,#c0392b);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:900;color:var(--paper);flex-shrink:0}
+.info-box{background:var(--paper);padding:.9rem 1rem;border-left:3px solid var(--red)}
+.info-box-dark{background:var(--paper);padding:.9rem 1rem;border-left:3px solid var(--ink)}
+.info-label{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:.25rem}
+.info-val{font-family:'Playfair Display',serif;font-weight:700}
+.info-sub{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--grey);margin-top:.15rem}
+
+/* FOOTER */
+footer{background:var(--ink);color:rgba(255,255,255,.6);padding:2.8rem 2.5rem 1.4rem}
+.ft-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.8rem;padding-bottom:1.8rem;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:1.3rem}
+.ft-brand{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;color:var(--paper);text-transform:uppercase;margin-bottom:.5rem}
+.ft-brand span{color:var(--red);font-style:italic}
+.ft-desc{font-size:.83rem;line-height:1.6;font-weight:300}
+.ft-col h4{font-family:'DM Mono',monospace;font-size:.63rem;letter-spacing:.15em;text-transform:uppercase;color:var(--paper);margin-bottom:.9rem}
+.ft-col a{display:block;font-size:.83rem;color:rgba(255,255,255,.45);margin-bottom:.45rem;cursor:pointer;transition:color .2s}
+.ft-col a:hover{color:var(--paper)}
+.ft-bot{display:flex;justify-content:space-between;align-items:center;font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.05em;color:rgba(255,255,255,.28)}
+
+/* ANIMAÇÕES */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .lead-sec{grid-template-columns:1fr}
+  .sidebar{border-left:none;padding-left:0;border-top:1px solid var(--lgrey);padding-top:1.4rem}
+  .grid3{grid-template-columns:1fr 1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .ft-top{grid-template-columns:1fr 1fr}
+}
+@media(max-width:700px){
+  .hamburger{display:flex}
+  #nav-desktop{display:none}
+  .nav-bar{justify-content:center}
+}
+@media(max-width:600px){
+  .topbar{display:none}
+  header{padding:1.2rem 1rem 0}
+  main{padding:1.4rem 1rem}
+  .grid3{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .ft-top{grid-template-columns:1fr;gap:1.8rem}
+  .ft-bot{flex-direction:column;gap:.4rem;text-align:center}
+  .nl-form{flex-direction:column}
+  .nl-form input{border-right:1px solid var(--ink)}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <span id="data-hoje"></span>
+  <div>
+    <a href="#">Edição Digital</a>
+    <a href="#">Subscrever</a>
+    <a href="#">Entrar</a>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <!-- LOGÓTIPO ARMINDO DOMINGOS ZONGO -->
+  <div class="logo-area" id="logo-btn">
+    <svg class="logo-svg" viewBox="0 0 540 96" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="540" height="96" rx="6" fill="#0e0e0e"/>
+      <rect x="0" y="0" width="10" height="96" rx="0" fill="#c0392b"/>
+      <rect x="16" y="9" width="508" height="78" rx="2" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.2"/>
+      <text x="278" y="38" text-anchor="middle"
+        font-family="Georgia,'Times New Roman',serif"
+        font-size="13" font-weight="400" letter-spacing="5"
+        fill="rgba(255,255,255,0.45)">ARMINDO DOMINGOS ZONGO</text>
+      <line x1="28" y1="46" x2="512" y2="46" stroke="#c0392b" stroke-width="1.5"/>
+      <text x="278" y="70" text-anchor="middle"
+        font-family="Georgia,'Times New Roman',serif"
+        font-size="32" font-weight="900" letter-spacing="9"
+        fill="#ffffff">DIÁRIO</text>
+      <text x="278" y="86" text-anchor="middle"
+        font-family="'Courier New',monospace"
+        font-size="8.5" letter-spacing="4"
+        fill="rgba(255,255,255,0.4)">INFORMAÇÃO · RIGOR · CONTEXTO</text>
+      <text x="30" y="70" font-size="12" fill="#c0392b" font-family="serif">✦</text>
+      <text x="500" y="70" font-size="12" fill="#c0392b" font-family="serif">✦</text>
+    </svg>
+  </div>
+
+  <!-- NAV BAR -->
+  <div class="nav-bar">
+    <button class="hamburger" id="ham-btn">
+      <span></span><span></span><span></span>
+    </button>
+    <nav id="nav-desktop">
+      <a data-dest="inicio"         class="ativo">Início</a>
+      <a data-dest="angola"         >🇦🇴 Angola</a>
+      <a data-dest="internacional"  >Internacional</a>
+      <a data-dest="portugal"       >Portugal</a>
+      <a data-dest="mundo"          >Mundo</a>
+      <a data-dest="economia"       >Economia</a>
+      <a data-dest="politica"       >Política</a>
+      <a data-dest="cultura"        >Cultura</a>
+      <a data-dest="desporto"       >Desporto</a>
+      <a data-dest="ciencia"        >Ciência</a>
+      <a data-dest="videos"         class="n-vid">▶ Vídeos</a>
+    </nav>
+  </div>
+</header>
+
+<!-- MENU LATERAL -->
+<div class="overlay" id="overlay"></div>
+<aside class="menu-lat" id="menu-lat">
+  <div class="m-head">
+    <span class="m-titulo">☰ Menu</span>
+    <button class="m-close" id="m-close-btn">✕</button>
+  </div>
+  <div class="m-sec">Editorias</div>
+  <div class="m-item" data-dest="inicio">🏠 Início</div>
+  <div class="m-item" data-dest="angola">🇦🇴 Angola</div>
+  <div class="m-item" data-dest="internacional">🌍 Internacional</div>
+  <div class="m-item" data-dest="portugal">🇵🇹 Portugal</div>
+  <div class="m-item" data-dest="mundo">🌐 Mundo</div>
+  <div class="m-item" data-dest="economia">📈 Economia</div>
+  <div class="m-item" data-dest="politica">🏛️ Política</div>
+  <div class="m-item" data-dest="cultura">🎭 Cultura</div>
+  <div class="m-item" data-dest="desporto">⚽ Desporto</div>
+  <div class="m-item" data-dest="ciencia">🔬 Ciência</div>
+  <div class="m-div"></div>
+  <div class="m-sec">Mais</div>
+  <div class="m-item m-vid" data-dest="videos">▶ Vídeos</div>
+  <div class="m-item" data-dest="sobrenos">👤 Sobre nós</div>
+</aside>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="tick-label">⚡ Urgente</div>
+  <div style="overflow:hidden;flex:1">
+    <div class="tick-track" id="ticker-track"></div>
+  </div>
+</div>
+
+<!-- CONTEÚDO -->
+<main><div id="conteudo"></div></main>
+
+<!-- RODAPÉ -->
+<footer>
+  <div class="ft-top">
+    <div>
+      <div class="ft-brand">Di<span>á</span>rio</div>
+      <p class="ft-desc">Projeto criado por <strong style="color:rgba(255,255,255,.7)">Armindo Domingos Zongo</strong>, estudante do Instituto Politécnico do Mayombe (IPM), 12.ª classe.</p>
+    </div>
+    <div class="ft-col">
+      <h4>Editorias</h4>
+      <a data-dest="angola">🇦🇴 Angola</a>
+      <a data-dest="internacional">Internacional</a>
+      <a data-dest="portugal">Portugal</a>
+      <a data-dest="economia">Economia</a>
+      <a data-dest="desporto">Desporto</a>
+      <a data-dest="videos">▶ Vídeos</a>
+    </div>
+    <div class="ft-col">
+      <h4>Empresa</h4>
+      <a data-dest="sobrenos">Sobre nós</a>
+      <a href="#">Redação</a>
+      <a href="#">Publicidade</a>
+      <a href="#">Contactos</a>
+    </div>
+    <div class="ft-col">
+      <h4>Subscrição</h4>
+      <a href="#">Digital</a>
+      <a href="#">Digital + Impresso</a>
+      <a href="#">Empresas</a>
+      <a href="#">Estudantes</a>
+    </div>
+  </div>
+  <div class="ft-bot">
+    <span>© <span id="ano"></span> Armindo Domingos Zongo — Todos os direitos reservados</span>
+    <span>Política de Privacidade · Termos de Uso</span>
+  </div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════
+//  DADOS — ARTIGOS (29 artigos, todas categorias)
+// ═══════════════════════════════════════════════
+const ARTIGOS = [
+  {id:1,cat:"portugal",titulo:"Governo lança plano de transformação digital do Estado com investimento de 800 milhões",resumo:"O executivo anunciou o maior programa de modernização da administração pública das últimas duas décadas, com foco em serviços digitais, cibersegurança e IA.",conteudo:"O Governo português anunciou um ambicioso plano de transformação digital do Estado, com um investimento total de 800 milhões de euros até 2028. O programa abrange a modernização de todos os serviços públicos, desde a saúde à justiça, passando pela segurança social e educação.\n\nO ministro da Modernização do Estado sublinhou que o objetivo é tornar Portugal um dos países mais digitalmente avançados da Europa, com 95% dos serviços públicos disponíveis online até ao final do mandato.\n\nEntre as medidas previstas destacam-se a criação de uma identidade digital unificada e o desenvolvimento de plataformas de inteligência artificial para otimizar a prestação de serviços aos cidadãos.",autor:"Ana Ferreira",tempo:"Há 23 min",leitura:"8 min",imagem:"https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80",destaque:true},
+  {id:2,cat:"portugal",titulo:"Parlamento aprova pacote de medidas para habitação acessível",resumo:"A Assembleia da República aprovou, com ampla maioria, medidas destinadas a facilitar o acesso à habitação para jovens e famílias de rendimentos médios.",conteudo:"A Assembleia da República aprovou hoje, com 187 votos a favor, um pacote legislativo abrangente para resolver a crise habitacional que afeta especialmente as grandes cidades portuguesas.\n\nO diploma inclui incentivos fiscais para proprietários que arrendem a preços controlados, a criação de um fundo público de habitação e medidas de combate à especulação imobiliária.",autor:"Luís Mendes",tempo:"Há 2 h",leitura:"6 min",imagem:"https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80",destaque:false},
+  {id:3,cat:"portugal",titulo:"Lisboa eleita quarta melhor cidade europeia para trabalhar remotamente",resumo:"Estudo internacional coloca a capital no top 5 das cidades mais atrativas para nómadas digitais, destacando qualidade de vida e infraestrutura tecnológica.",conteudo:"Lisboa subiu duas posições no ranking anual das melhores cidades europeias para trabalho remoto, ficando em quarto lugar num estudo que avaliou 50 cidades do continente.\n\nO estudo destacou a qualidade da infraestrutura de telecomunicações portuguesa, a oferta de espaços de coworking e o custo de vida relativamente acessível face a outras capitais europeias.",autor:"Marta Sousa",tempo:"Há 4 h",leitura:"4 min",imagem:"https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=800&q=80",destaque:false},
+  {id:4,cat:"mundo",titulo:"Cimeira da NATO debate reforço da presença no flanco leste europeu",resumo:"Os 32 estados-membros reúnem-se em Bruxelas para discutir novos compromissos de defesa face às persistentes tensões geopolíticas.",conteudo:"Os ministros da Defesa dos 32 países membros da NATO reuniram-se em Bruxelas para uma cimeira dedicada ao reforço da presença militar no flanco leste da Aliança.\n\nO secretário-geral afirmou que a segurança coletiva exige investimento coletivo e apelou a todos os membros para que cumpram o objetivo de destinar 2% do PIB à defesa. Atualmente, apenas 18 dos 32 países cumprem esse objetivo.",autor:"Sofia Lopes",tempo:"Há 1 h",leitura:"7 min",imagem:"https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=800&q=80",destaque:true},
+  {id:5,cat:"mundo",titulo:"Negociações de paz no Médio Oriente entram em fase decisiva",resumo:"Diplomatas intensificam os esforços para alcançar um acordo duradouro, com mediação dos Estados Unidos, Qatar e Egito.",conteudo:"As negociações para um cessar-fogo no Médio Oriente entraram numa fase considerada decisiva, com representantes de várias partes a reunirem-se em Doha sob a mediação de diplomatas norte-americanos, qataris e egípcios.\n\nFontes próximas das negociações descrevem o ambiente como cautelosamente otimista.",autor:"Ricardo Alves",tempo:"Há 3 h",leitura:"5 min",imagem:"https://images.unsplash.com/photo-1493321890756-2d553de1f7e7?w=800&q=80",destaque:false},
+  {id:6,cat:"mundo",titulo:"OMS alerta para novo surto de gripe sazonal no hemisfério norte",resumo:"A Organização Mundial de Saúde emitiu um alerta preventivo e recomenda a vacinação antecipada, especialmente para grupos de risco.",conteudo:"A OMS emitiu um alerta sobre uma nova variante do vírus da gripe sazonal que circula no hemisfério norte com maior virulência. A agência recomenda a vacinação imediata para grupos de risco, incluindo idosos, crianças pequenas e pessoas com doenças crónicas.",autor:"Inês Cardoso",tempo:"Há 5 h",leitura:"4 min",imagem:"https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?w=800&q=80",destaque:false},
+  {id:7,cat:"economia",titulo:"BCE mantém taxas de juro e sinaliza corte para o outono",resumo:"A decisão, por unanimidade, reflete a moderação da inflação na zona euro. O presidente sinalizou possível corte se a inflação continuar a descer.",conteudo:"O Banco Central Europeu decidiu manter inalteradas as taxas de juro diretoras. A taxa de depósito permanece em 2,5% e a taxa de refinanciamento em 2,75%.\n\nO presidente do BCE sinalizou que poderá haver espaço para um corte nas taxas no outono, caso a inflação continue a convergir para o objetivo de 2%.",autor:"Pedro Costa",tempo:"Há 45 min",leitura:"6 min",imagem:"https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80",destaque:true},
+  {id:8,cat:"economia",titulo:"Inflação desce para 2,3% em Maio, mínimo dos últimos três anos",resumo:"O INE confirmou a descida da inflação homóloga, impulsionada pela queda nos preços da energia e pela estabilização dos bens alimentares.",conteudo:"A inflação em Portugal desceu para 2,3% em Maio, o valor mais baixo dos últimos três anos, segundo dados do INE. A descida foi impulsionada pela queda nos preços da energia, que registou uma variação negativa de 3,2%.",autor:"Carla Neves",tempo:"Há 1 h",leitura:"5 min",imagem:"https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&q=80",destaque:false},
+  {id:9,cat:"economia",titulo:"Banco de Portugal revê previsões de crescimento para 2,1%",resumo:"A revisão em alta reflete a resiliência do mercado de trabalho e o bom desempenho das exportações de serviços.",conteudo:"O Banco de Portugal reviu em alta as previsões de crescimento económico para 2026, passando de 1,8% para 2,1% do PIB. A revisão reflete a resiliência do mercado de trabalho, com a taxa de desemprego em mínimos históricos de 6,2%.",autor:"Gonçalo Reis",tempo:"Há 2 h",leitura:"4 min",imagem:"https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800&q=80",destaque:false},
+  {id:10,cat:"politica",titulo:"Cimeira europeia define novas políticas energéticas para 2030",resumo:"Os líderes da UE chegaram a acordo sobre um pacote de medidas para acelerar a transição energética e reduzir a dependência de combustíveis fósseis.",conteudo:"Os chefes de Estado dos 27 países membros da UE chegaram a um acordo histórico sobre as políticas energéticas para a década, numa cimeira em Bruxelas. O acordo estabelece metas vinculativas de redução de emissões e um mecanismo de solidariedade energética.",autor:"Beatriz Santos",tempo:"Há 30 min",leitura:"9 min",imagem:"https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800&q=80",destaque:true},
+  {id:11,cat:"politica",titulo:"Presidente da República convoca conselho de estado para debater crise habitacional",resumo:"Marcelo Rebelo de Sousa considera que a gravidade da situação habitacional justifica a reunião do órgão consultivo máximo.",conteudo:"O Presidente da República convocou uma reunião extraordinária do Conselho de Estado dedicada ao tema da habitação. Marcelo Rebelo de Sousa justificou a decisão com a gravidade e urgência da crise habitacional que afeta Portugal, especialmente Lisboa e Porto.",autor:"Filipe Correia",tempo:"Há 3 h",leitura:"5 min",imagem:"https://images.unsplash.com/photo-1575517111839-3a3843ee7f5d?w=800&q=80",destaque:false},
+  {id:12,cat:"cultura",titulo:"Festival de Cinema de Lisboa anuncia programação recorde com 180 filmes",resumo:"A 30.ª edição do IndieLisboa apresenta 180 filmes de 45 países, com estreias mundiais e retrospetiva do cinema português dos anos 80.",conteudo:"O IndieLisboa apresentou a programação da sua 30.ª edição, a mais extensa de sempre com 180 filmes selecionados de 3.200 candidaturas de 45 países. O festival decorrerá de 1 a 11 de junho em vários espaços da cidade.",autor:"Teresa Monteiro",tempo:"Há 2 h",leitura:"5 min",imagem:"https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&q=80",destaque:true},
+  {id:13,cat:"cultura",titulo:"Museu do Azulejo recebe exposição internacional inédita sobre arte islâmica",resumo:"A exposição 'Geometrias do Sagrado' reúne 300 peças de 40 museus de todo o mundo e estará patente em Lisboa durante seis meses.",conteudo:"O Museu Nacional do Azulejo inaugura a maior exposição de arte islâmica já realizada em Portugal, reunindo 300 peças de 40 museus de 18 países. A exposição explora as ligações entre a arte islâmica e o azulejo português.",autor:"André Carvalho",tempo:"Há 4 h",leitura:"6 min",imagem:"https://images.unsplash.com/photo-1548013146-72479768bada?w=800&q=80",destaque:false},
+  {id:14,cat:"desporto",titulo:"Seleção nacional qualifica-se para a fase final do Campeonato da Europa",resumo:"Portugal garantiu a presença na fase final com uma vitória convincente e jogo de grande qualidade coletiva.",conteudo:"A seleção nacional de futebol garantiu a qualificação para a fase final do Campeonato da Europa com uma vitória. A equipa das quinas controlou o jogo durante os 90 minutos e somou os três pontos que garantem o apuramento.",autor:"Bruno Ferreira",tempo:"Há 1 h",leitura:"5 min",imagem:"https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=800&q=80",destaque:true},
+  {id:15,cat:"desporto",titulo:"Benfica assegura contratação de avançado internacional por 45 milhões",resumo:"O clube da Luz confirmou a chegada do avançado, considerado uma das maiores promessas do futebol europeu.",conteudo:"O Sport Lisboa e Benfica confirmou a contratação de um avançado internacional por 45 milhões de euros, tornando-se na segunda maior contratação da história do clube. O jogador, de 22 anos, chega proveniente da Bundesliga e assinou contrato de cinco anos.",autor:"Marco Silva",tempo:"Há 3 h",leitura:"4 min",imagem:"https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80",destaque:false},
+  {id:16,cat:"ciencia",titulo:"Startup lisboeta de IA médica levanta 40 milhões em ronda série B",resumo:"A plataforma, que usa modelos de linguagem para diagnóstico assistido, já opera em 12 hospitais portugueses e prepara expansão ibérica.",conteudo:"A startup MediAI fechou uma ronda série B de 40 milhões de euros, liderada por um fundo norte-americano de healthtech. A empresa desenvolveu uma plataforma de IA que auxilia médicos no diagnóstico de doenças oncológicas com precisão superior a 94%.",autor:"Rui Marques",tempo:"Há 2 h",leitura:"6 min",imagem:"https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80",destaque:true},
+  {id:17,cat:"ciencia",titulo:"Investigadores portugueses publicam avanço em terapias génicas contra cancro",resumo:"Equipa do iMM de Lisboa identifica mecanismo que pode aumentar em 60% a eficácia das terapias CAR-T.",conteudo:"Investigadores do Instituto de Medicina Molecular João Lobo Antunes publicaram na revista Nature Medicine os resultados de uma descoberta que poderá revolucionar o tratamento de cancro hematológico. A equipa identificou um mecanismo molecular que, quando inibido, aumenta em mais de 60% a eficácia das terapias CAR-T.",autor:"Patrícia Gomes",tempo:"Há 5 h",leitura:"7 min",imagem:"https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=800&q=80",destaque:false},
+  {id:18,cat:"angola",titulo:"Governo angolano lança programa de construção de 50 mil habitações sociais",resumo:"O executivo anunciou o ambicioso plano habitacional 'Angola Casa Para Todos', com investimento de 2,5 mil milhões de dólares até 2028.",conteudo:"O Governo de Angola anunciou o plano nacional de habitação social que prevê a construção de 50 mil fogos até 2028, com investimento de 2,5 mil milhões de dólares. O programa será financiado por fundos públicos e parcerias com investidores privados nacionais e internacionais.\n\nO ministro do Urbanismo destacou que as obras arrancam no primeiro trimestre, com prioridade para as periferias de Luanda, onde o défice habitacional é mais agudo. Segundo dados do ministério, a capital precisa de mais de 600 mil habitações.\n\nO plano inclui infraestruturas de apoio como escolas, centros de saúde, mercados e espaços verdes, criando bairros sustentáveis.",autor:"Carlos Mbemba",tempo:"Há 1 h",leitura:"6 min",imagem:"https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80",destaque:true},
+  {id:19,cat:"angola",titulo:"Produção petrolífera angolana cresce 4% no primeiro trimestre de 2026",resumo:"A Sonangol registou aumento na produção diária de crude, impulsionado pelos novos campos do pré-sal e pela entrada em funcionamento do bloco 32.",conteudo:"A produção petrolífera de Angola cresceu 4% no primeiro trimestre de 2026, atingindo uma média de 1,18 milhões de barris por dia, segundo dados da Sonangol. O aumento deve-se à entrada em plena operação de novos blocos no pré-sal.\n\nO presidente da Sonangol afirmou que a empresa está a cumprir o plano estratégico de diversificação e modernização. Angola mantém-se como um dos maiores produtores de petróleo do continente africano.",autor:"Esperança Luvualo",tempo:"Há 2 h",leitura:"5 min",imagem:"https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&q=80",destaque:false},
+  {id:20,cat:"angola",titulo:"Universidade Agostinho Neto inaugura novo campus de tecnologia em Luanda",resumo:"O maior estabelecimento de ensino superior angolano inaugura instalações modernas para cursos de engenharia informática, IA e cibersegurança.",conteudo:"A Universidade Agostinho Neto inaugurou o seu novo campus tecnológico em Luanda, num investimento de 180 milhões de kwanzas. O complexo inclui laboratórios de última geração, biblioteca digital e centro de incubação de startups.\n\nO reitor sublinhou que o campus pretende formar os profissionais de tecnologia que Angola necessita, com capacidade para dois mil estudantes por ano nos cursos de engenharia informática, IA, cibersegurança e ciência de dados.",autor:"Nzinga Kalunga",tempo:"Há 3 h",leitura:"5 min",imagem:"https://images.unsplash.com/photo-1562774053-701939374585?w=800&q=80",destaque:false},
+  {id:21,cat:"angola",titulo:"Cabinda regista crescimento económico de 6% impulsionado por novas indústrias",resumo:"A província do enclave diversifica a sua base económica com investimentos em pesca industrial, madeira certificada e turismo ecológico.",conteudo:"A província de Cabinda registou um crescimento económico de 6% em 2025, o valor mais elevado dos últimos oito anos. O crescimento foi impulsionado pela diversificação económica, com destaque para a pesca industrial, madeira certificada e turismo ecológico na Floresta do Maiombe.\n\nO governador provincial destacou que a estratégia de reduzir a dependência do petróleo está a dar resultados, com a criação de mais de 12 mil novos postos de trabalho. O Instituto Politécnico do Mayombe tem desempenhado papel central na formação de técnicos especializados.",autor:"Domingos Luemba",tempo:"Há 4 h",leitura:"6 min",imagem:"https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800&q=80",destaque:false},
+  {id:22,cat:"angola",titulo:"Seleção angolana de basquetebol qualifica-se para o Afrobasket 2026",resumo:"Os Palancas Negras venceram o grupo de qualificação sem derrotas e preparam-se para defender o estatuto de potência do basquetebol africano.",conteudo:"A seleção angolana de basquetebol qualificou-se para o Afrobasket 2026 após uma fase de qualificação irrepreensível, com cinco vitórias em cinco jogos. Angola, 12 vezes campeã africana, apresentou uma equipa renovada com jovens talentos.\n\nO selecionador elogiou o espírito coletivo e a evolução dos jovens jogadores, afirmando que Angola vai ao Afrobasket com ambições de conquistar o título continental pela 13.ª vez.",autor:"António Zau",tempo:"Há 5 h",leitura:"4 min",imagem:"https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&q=80",destaque:false},
+  {id:23,cat:"angola",titulo:"Museu Nacional de Angola recebe doação de 500 peças de arte tradicional",resumo:"A coleção inclui esculturas Chokwe, máscaras Lwena e tecidos Kuba de rara beleza, doadas por colecionador angolano da diáspora.",conteudo:"O Museu Nacional de Angola recebeu uma doação histórica de 500 peças de arte tradicional angolana, reunidas ao longo de quatro décadas pelo colecionador João Makongo. A coleção inclui esculturas Chokwe, máscaras cerimoniais Lwena e instrumentos musicais tradicionais.\n\nO diretor do museu classificou a doação como um dos maiores presentes que Angola poderia receber. A coleção ficará em exposição permanente numa nova ala dedicada à arte tradicional das diferentes etnias angolanas.",autor:"Maria Catota",tempo:"Há 6 h",leitura:"5 min",imagem:"https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=800&q=80",destaque:false},
+  {id:24,cat:"internacional",titulo:"União Africana aprova plano continental de eletrificação rural para 2030",resumo:"Os 55 estados membros comprometem-se a levar eletricidade a 600 milhões de africanos que vivem sem acesso à energia elétrica.",conteudo:"A cimeira da União Africana em Adis Abeba aprovou por unanimidade o Plano Continental de Eletrificação Rural, que visa garantir acesso à energia elétrica a 600 milhões de africanos. O plano, com orçamento de 100 mil milhões de dólares, aposta maioritariamente em energias renováveis.\n\nO plano inclui um componente de formação profissional, prevendo a criação de 2 milhões de empregos verdes no setor energético africano ao longo da próxima década.",autor:"Fatima Diallo",tempo:"Há 30 min",leitura:"7 min",imagem:"https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80",destaque:true},
+  {id:25,cat:"internacional",titulo:"China anuncia investimento de 50 mil milhões em infraestruturas africanas",resumo:"O novo pacote do Fórum de Cooperação China-África privilegia portos, estradas, comboios e parques industriais em 30 países.",conteudo:"O presidente chinês anunciou um pacote de investimentos de 50 mil milhões de dólares destinado a infraestruturas no continente africano nos próximos cinco anos. O financiamento abrange 30 países africanos.\n\nAs áreas prioritárias incluem portos, corredores ferroviários transfronteiriços, parques industriais e redes de telecomunicações 5G. Angola figura entre os principais beneficiários do pacote.",autor:"Wei Zhang",tempo:"Há 1 h",leitura:"6 min",imagem:"https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80",destaque:false},
+  {id:26,cat:"internacional",titulo:"ONU alerta: 2025 foi o ano mais quente desde que há registos",resumo:"O relatório anual do clima confirma que a temperatura média global ultrapassou 1,6°C acima dos níveis pré-industriais.",conteudo:"A Organização Meteorológica Mundial confirmou que 2025 foi o ano mais quente alguma vez registado, com a média anual a superar em 1,6°C os níveis pré-industriais. Os eventos climáticos extremos foram mais frequentes e intensos do que em qualquer ano anterior.\n\nO relatório destaca que África é o continente mais vulnerável às alterações climáticas, apesar de contribuir com menos de 4% das emissões globais.",autor:"Amara Koné",tempo:"Há 2 h",leitura:"6 min",imagem:"https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80",destaque:false},
+  {id:27,cat:"internacional",titulo:"Brasil e Argentina assinam acordo histórico de integração económica",resumo:"Os dois maiores países da América do Sul eliminam tarifas alfandegárias em mais de 90% dos produtos, num passo decisivo para o Mercosul.",conteudo:"Os presidentes do Brasil e da Argentina assinaram em Buenos Aires um acordo de integração económica que elimina tarifas alfandegárias em mais de 90% dos produtos transacionados entre si. O acordo entra em vigor em janeiro de 2027.\n\nO volume de comércio bilateral ascende a cerca de 40 mil milhões de dólares anuais, valor que os especialistas preveem poder duplicar nos próximos cinco anos.",autor:"Pablo Rodrigues",tempo:"Há 3 h",leitura:"5 min",imagem:"https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=800&q=80",destaque:false},
+  {id:28,cat:"internacional",titulo:"India torna-se a segunda maior economia do mundo ultrapassando os EUA",resumo:"O FMI confirma que a economia indiana ultrapassou a norte-americana em termos de paridade de poder de compra.",conteudo:"O FMI confirmou que a Índia se tornou a segunda maior economia do mundo em paridade de poder de compra, ultrapassando os EUA e ficando apenas atrás da China. O marco reflete décadas de crescimento económico sustentado.\n\nA economia indiana cresceu a uma taxa média de 7% ao ano na última década, impulsionada pelo setor tecnológico e por um mercado interno de 1,4 mil milhões de consumidores.",autor:"Priya Sharma",tempo:"Há 4 h",leitura:"5 min",imagem:"https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800&q=80",destaque:false},
+  {id:29,cat:"internacional",titulo:"Acordo de paz no Sudão do Sul abre caminho para eleições em 2027",resumo:"As partes em conflito assinaram um cessar-fogo permanente mediado pela União Africana, encerrando um ciclo de violência de três anos.",conteudo:"As principais facções em conflito no Sudão do Sul assinaram em Juba um acordo de paz abrangente, mediado pela União Africana. O documento prevê um cessar-fogo permanente, desmobilização de milícias e eleições gerais em 2027.\n\nO acordo foi recebido com alívio pela população civil, que sofreu mais de três anos de conflito armado com mais de dois milhões de deslocados internos.",autor:"James Okello",tempo:"Há 5 h",leitura:"6 min",imagem:"https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80",destaque:false}
+];
+
+// ═══════════════════════════════════════════════
+//  DADOS — VÍDEOS
+// ═══════════════════════════════════════════════
+const VIDEOS = [
+  {id:'v1',yt:'ScMzIvxBSi4',titulo:'Discurso do Presidente de Angola na Abertura da Assembleia Nacional',cat:'Angola',dur:'18:42',views:'124K'},
+  {id:'v2',yt:'IUN664s7N-c',titulo:'Cimeira da União Africana 2026 — Destaques do primeiro dia',cat:'Internacional',dur:'12:05',views:'89K'},
+  {id:'v3',yt:'hVimVzgtD6w',titulo:'Luanda em Transformação — Reportagem especial sobre a nova cidade',cat:'Angola',dur:'24:18',views:'210K'},
+  {id:'v4',yt:'tgbNymZ7vqY',titulo:'Economia Mundial 2026 — Análise dos principais indicadores',cat:'Economia',dur:'31:50',views:'67K'},
+  {id:'v5',yt:'M7lc1UVf-VE',titulo:'Floresta do Maiombe — O pulmão de Cabinda que o mundo precisa conhecer',cat:'Angola',dur:'15:33',views:'305K'},
+  {id:'v6',yt:'ysz5S6PUM-U',titulo:'Alterações Climáticas em África — Relatório da ONU explicado',cat:'Internacional',dur:'22:11',views:'143K'}
+];
+
+// ═══════════════════════════════════════════════
+//  NOMES DE CATEGORIA
+// ═══════════════════════════════════════════════
+const NOMES = {
+  portugal:'Portugal',mundo:'Mundo',economia:'Economia',
+  politica:'Política',cultura:'Cultura',desporto:'Desporto',
+  ciencia:'Ciência',angola:'Angola',internacional:'Internacional'
+};
+
+// ═══════════════════════════════════════════════
+//  ESTADO
+// ═══════════════════════════════════════════════
+let estado = {view:'inicio', cat:null, artId:null};
+
+// ═══════════════════════════════════════════════
+//  UTILITÁRIOS
+// ═══════════════════════════════════════════════
+const C = id => document.getElementById(id);
+const nom = c => NOMES[c] || c.charAt(0).toUpperCase()+c.slice(1);
+const porCat = c => ARTIGOS.filter(a=>a.cat===c);
+const dest = () => ARTIGOS.filter(a=>a.destaque);
+
+function scroll(){ window.scrollTo({top:0,behavior:'smooth'}); }
+
+function setAtivo(cat){
+  document.querySelectorAll('#nav-desktop a[data-dest]').forEach(a=>{
+    a.classList.toggle('ativo', a.dataset.dest === (cat||'inicio'));
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  COMPONENTES HTML
+// ═══════════════════════════════════════════════
+function card(a){
+  return `<div class="card" onclick="irArtigo(${a.id})">
+    <img class="card-img" src="${a.imagem}" alt="${a.titulo}" onerror="this.style.background='#1a1a2e';this.removeAttribute('src')">
+    <div class="card-cat">● ${nom(a.cat)}</div>
+    <h3 class="card-title">${a.titulo}</h3>
+    <p class="card-exc">${a.resumo}</p>
+    <div class="card-meta">${a.autor} · ${a.tempo}</div>
+  </div>`;
+}
+
+function sbItem(a,n){
+  return `<div class="sb-item" onclick="irArtigo(${a.id})">
+    <div class="sb-num">${String(n).padStart(2,'0')}</div>
+    <div class="sb-cat">${nom(a.cat)}</div>
+    <div class="sb-title">${a.titulo}</div>
+    <div class="sb-time">${a.tempo}</div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER INÍCIO
+// ═══════════════════════════════════════════════
+function renderInicio(){
+  const p = dest()[0]||ARTIGOS[0];
+  const sb = ARTIGOS.filter(a=>a.id!==p.id).slice(0,4);
+  const gr = ARTIGOS.filter(a=>!a.destaque).slice(0,3);
+  C('conteudo').innerHTML = `
+    <div class="lead-sec">
+      <div>
+        <img class="lead-img" src="${p.imagem}" alt="${p.titulo}" onclick="irArtigo(${p.id})" onerror="this.style.background='#1a1a2e';this.removeAttribute('src')">
+        <div class="lead-cat">● ${nom(p.cat)}</div>
+        <h1 class="lead-title" onclick="irArtigo(${p.id})">${p.titulo}</h1>
+        <p class="lead-deck">${p.resumo}</p>
+        <div class="lead-meta"><span class="au">${p.autor}</span><span>${p.tempo}</span><span>${p.leitura} de leitura</span></div>
+        <button class="btn-ler" onclick="irArtigo(${p.id})">Ler artigo completo →</button>
+      </div>
+      <div class="sidebar">
+        <div class="slabel">Mais lidas hoje</div>
+        ${sb.map((a,i)=>sbItem(a,i+1)).join('')}
+      </div>
+    </div>
+    <div class="slabel">Últimas notícias</div>
+    <div class="grid3">${gr.map(card).join('')}</div>
+    <div class="stats">
+      <div class="stat"><div class="stat-n">1.2M</div><div class="stat-l">Leitores mensais</div></div>
+      <div class="stat"><div class="stat-n">${ARTIGOS.length}</div><div class="stat-l">Artigos</div></div>
+      <div class="stat"><div class="stat-n">48</div><div class="stat-l">Jornalistas</div></div>
+      <div class="stat"><div class="stat-n">2026</div><div class="stat-l">Fundado em</div></div>
+    </div>
+    <div class="nl">
+      <h3>Receba as notícias do dia</h3>
+      <p>A nossa newsletter diária às 7h30 — os destaques que importam.</p>
+      <div class="nl-form">
+        <input id="nl-email" type="email" placeholder="O seu endereço de email">
+        <button onclick="subscrever()">Subscrever</button>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER CATEGORIA
+// ═══════════════════════════════════════════════
+function renderCat(cat){
+  const arts = porCat(cat);
+  const nome = nom(cat);
+  if(!arts.length){
+    C('conteudo').innerHTML=`<div class="cat-hdr"><div class="slabel">${nome}</div><h2><span>${nome}</span></h2></div><p style="color:var(--grey);font-family:'DM Mono',monospace;font-size:.85rem">Ainda não há artigos nesta categoria.</p>`;
+    return;
+  }
+  const p = arts[0], resto = arts.slice(1);
+  C('conteudo').innerHTML = `
+    <div class="cat-hdr"><div class="slabel">${nome}</div><h2><span>${nome}</span></h2></div>
+    <div class="lead-sec" style="grid-template-columns:1fr">
+      <div>
+        <img class="lead-img" src="${p.imagem}" alt="${p.titulo}" onclick="irArtigo(${p.id})" onerror="this.style.background='#1a1a2e';this.removeAttribute('src')">
+        <div class="lead-cat">● ${nome}</div>
+        <h2 class="lead-title" onclick="irArtigo(${p.id})">${p.titulo}</h2>
+        <p class="lead-deck">${p.resumo}</p>
+        <div class="lead-meta"><span class="au">${p.autor}</span><span>${p.tempo}</span><span>${p.leitura} de leitura</span></div>
+        <button class="btn-ler" onclick="irArtigo(${p.id})">Ler artigo →</button>
+      </div>
+    </div>
+    ${resto.length?`<div class="slabel">Mais em ${nome}</div><div class="grid3">${resto.map(card).join('')}</div>`:''}`;
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER ARTIGO
+// ═══════════════════════════════════════════════
+function renderArtigo(id){
+  const a = ARTIGOS.find(x=>x.id===id);
+  if(!a){irInicio();return;}
+  const paras = a.conteudo.split('\n\n').filter(p=>p.trim()).map(p=>`<p>${p.trim()}</p>`).join('');
+  const rel = porCat(a.cat).filter(x=>x.id!==id).slice(0,3);
+  C('conteudo').innerHTML = `
+    <div class="art-view">
+      <div class="art-back" onclick="history.back()">← Voltar</div>
+      <div class="art-cat">● ${nom(a.cat)}</div>
+      <h1 class="art-title">${a.titulo}</h1>
+      <p class="art-resumo">${a.resumo}</p>
+      <div class="art-meta"><span class="au">${a.autor}</span><span>${a.tempo}</span><span>${a.leitura} de leitura</span></div>
+      <img class="art-img" src="${a.imagem}" alt="${a.titulo}" onerror="this.style.background='#1a1a2e';this.removeAttribute('src')">
+      <div class="art-body">${paras}</div>
+    </div>
+    ${rel.length?`<div style="margin-top:3rem;border-top:1px solid var(--lgrey);padding-top:2rem"><div class="slabel">Artigos relacionados</div><div class="grid3">${rel.map(card).join('')}</div></div>`:''}`;
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER VÍDEOS
+// ═══════════════════════════════════════════════
+function renderVideos(){
+  C('conteudo').innerHTML = `
+    <div class="cat-hdr"><div class="slabel">Vídeos</div><h2><span>▶</span> Vídeos</h2></div>
+    <div id="vplayer" style="margin-bottom:2rem">
+      <div class="vid-player-box">
+        <iframe id="vframe" src="https://www.youtube.com/embed/${VIDEOS[0].yt}?rel=0" allowfullscreen allow="autoplay;encrypted-media"></iframe>
+      </div>
+      <div id="vinfo">
+        <div class="card-cat">● ${VIDEOS[0].cat}</div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:700;margin-bottom:.3rem">${VIDEOS[0].titulo}</h2>
+        <div class="card-meta">${VIDEOS[0].dur} · ${VIDEOS[0].views} visualizações</div>
+      </div>
+    </div>
+    <div class="slabel">Todos os vídeos</div>
+    <div class="grid3">
+      ${VIDEOS.map(v=>`
+        <div class="card" onclick="trocarVideo('${v.yt}','${v.titulo.replace(/'/g,"\\'")}','${v.cat}','${v.dur}','${v.views}')">
+          <div class="vid-thumb">
+            <img src="https://img.youtube.com/vi/${v.yt}/mqdefault.jpg" onerror="this.style.background='#222';this.removeAttribute('src')">
+            <div class="vid-play-btn"><div>▶</div></div>
+            <div class="vid-dur">${v.dur}</div>
+          </div>
+          <div class="card-cat">● ${v.cat}</div>
+          <h3 class="card-title" style="font-size:1rem">${v.titulo}</h3>
+          <div class="card-meta">${v.views} visualizações</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function trocarVideo(yt,titulo,cat,dur,views){
+  const f=C('vframe'), i=C('vinfo');
+  if(f) f.src=`https://www.youtube.com/embed/${yt}?rel=0&autoplay=1`;
+  if(i) i.innerHTML=`<div class="card-cat">● ${cat}</div><h2 style="font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:700;margin-bottom:.3rem">${titulo}</h2><div class="card-meta">${dur} · ${views} visualizações</div>`;
+  C('vplayer').scrollIntoView({behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER SOBRE NÓS
+// ═══════════════════════════════════════════════
+function renderSobreNos(){
+  C('conteudo').innerHTML = `
+    <div class="art-view">
+      <div class="art-back" onclick="irInicio()">← Voltar ao início</div>
+      <div class="art-cat">● Sobre nós</div>
+      <h1 class="art-title">Quem está por trás do Diário</h1>
+      <p class="art-resumo">Um projeto nascido da paixão pelo jornalismo e pela informação de qualidade, criado por um estudante angolano com visão.</p>
+
+      <div class="sobre-card">
+        <div style="display:flex;align-items:center;gap:1.4rem;margin-bottom:1.6rem">
+          <div class="sobre-avatar">AZ</div>
+          <div>
+            <div style="font-family:'DM Mono',monospace;font-size:.63rem;letter-spacing:.15em;text-transform:uppercase;color:var(--red);margin-bottom:.3rem">● Fundador &amp; Criador</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:700">Armindo Domingos Zongo</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
+          <div class="info-box">
+            <div class="info-label">Instituição</div>
+            <div class="info-val">Instituto Politécnico do Mayombe</div>
+            <div class="info-sub">IPM — Cabinda, Angola</div>
+          </div>
+          <div class="info-box-dark">
+            <div class="info-label">Nível académico</div>
+            <div class="info-val">12.ª Classe</div>
+            <div class="info-sub">Estudante</div>
+          </div>
+        </div>
+
+        <div class="art-body">
+          <p>Este site foi desenvolvido por <strong>Armindo Domingos Zongo</strong>, estudante da <strong>12.ª classe</strong> no <strong>Instituto Politécnico do Mayombe (IPM)</strong>, em Cabinda, Angola.</p>
+          <p>O projeto <em>Diário</em> nasceu como exercício prático de desenvolvimento web, combinando design editorial moderno com tecnologias como HTML, CSS e JavaScript. O objetivo foi criar uma plataforma de notícias completa e funcional, com navegação dinâmica, imagens reais, múltiplas categorias, páginas de artigos e secção de vídeos.</p>
+          <p>Este trabalho demonstra as competências técnicas adquiridas no percurso académico e a capacidade de criar soluções digitais profissionais.</p>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--lgrey);padding-top:1.4rem">
+        <div class="slabel">Sobre o projeto</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem;text-align:center">
+          <div style="padding:1rem">
+            <div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:var(--red)">${ARTIGOS.length}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--grey)">Artigos</div>
+          </div>
+          <div style="padding:1rem">
+            <div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:var(--red)">${Object.keys(NOMES).length}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--grey)">Categorias</div>
+          </div>
+          <div style="padding:1rem">
+            <div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:var(--red)">${VIDEOS.length}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--grey)">Vídeos</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  NAVEGAÇÃO
+// ═══════════════════════════════════════════════
+function irInicio(){
+  estado={view:'inicio',cat:null,artId:null};
+  setAtivo('inicio'); renderInicio(); scroll();
+  history.pushState(estado,'','#inicio');
+}
+function irCategoria(cat){
+  estado={view:'cat',cat,artId:null};
+  setAtivo(cat); renderCat(cat); scroll();
+  history.pushState(estado,'',`#${cat}`);
+}
+function irArtigo(id){
+  estado={view:'artigo',cat:null,artId:id};
+  setAtivo(null); renderArtigo(id); scroll();
+  history.pushState(estado,'',`#artigo-${id}`);
+}
+function irVideos(){
+  estado={view:'videos',cat:null,artId:null};
+  setAtivo('videos'); renderVideos(); scroll();
+  history.pushState(estado,'','#videos');
+}
+function irSobreNos(){
+  estado={view:'sobrenos',cat:null,artId:null};
+  setAtivo(null); renderSobreNos(); scroll();
+  history.pushState(estado,'','#sobre-nos');
+}
+
+// ═══════════════════════════════════════════════
+//  NEWSLETTER
+// ═══════════════════════════════════════════════
+function subscrever(){
+  const inp=C('nl-email'); if(!inp) return;
+  if(!inp.value.trim()||!inp.value.includes('@')){inp.style.borderColor='var(--red)';inp.placeholder='Email inválido';return;}
+  inp.style.borderColor=''; inp.value=''; inp.placeholder='✓ Subscrito com sucesso!';
+}
+
+// ═══════════════════════════════════════════════
+//  POPSTATE (botões voltar/avançar do browser)
+// ═══════════════════════════════════════════════
+window.addEventListener('popstate',()=>{
+  const h=location.hash;
+  if(!h||h==='#inicio'){renderInicio();setAtivo('inicio');}
+  else if(h==='#videos'){renderVideos();setAtivo('videos');}
+  else if(h==='#sobre-nos'){renderSobreNos();setAtivo(null);}
+  else if(h.startsWith('#artigo-')){renderArtigo(parseInt(h.replace('#artigo-','')));setAtivo(null);}
+  else{const c=h.replace('#','');if(NOMES[c]){renderCat(c);setAtivo(c);}else{renderInicio();setAtivo('inicio');}}
+});
+
+// ═══════════════════════════════════════════════
+//  INICIALIZAÇÃO
+// ═══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  // Data
+  const h=new Date();
+  C('data-hoje').textContent=h.toLocaleDateString('pt-PT',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).replace(/^\w/,c=>c.toUpperCase());
+  C('ano').textContent=h.getFullYear();
+
+  // Ticker
+  const track=C('ticker-track');
+  const titles=ARTIGOS.slice(0,8).map(a=>a.titulo);
+  [...titles,...titles].forEach(t=>{const s=document.createElement('span');s.textContent=t;track.appendChild(s);});
+
+  // Logo clique
+  C('logo-btn').addEventListener('click', irInicio);
+
+  // Hambúrguer
+  const ham=C('ham-btn'), overlay=C('overlay'), menu=C('menu-lat'), closeBtn=C('m-close-btn');
+  function abrirMenu(){menu.classList.add('open');overlay.classList.add('open');ham.classList.add('open');}
+  function fecharMenu(){menu.classList.remove('open');overlay.classList.remove('open');ham.classList.remove('open');}
+  ham.addEventListener('click', abrirMenu);
+  closeBtn.addEventListener('click', fecharMenu);
+  overlay.addEventListener('click', fecharMenu);
+
+  // Itens do menu lateral
+  document.querySelectorAll('.menu-lat .m-item[data-dest]').forEach(el=>{
+    el.addEventListener('click',function(){
+      fecharMenu();
+      const d=this.dataset.dest;
+      if(d==='inicio')       irInicio();
+      else if(d==='videos')  irVideos();
+      else if(d==='sobrenos')irSobreNos();
+      else                   irCategoria(d);
+    });
+  });
+
+  // Nav desktop
+  document.querySelectorAll('#nav-desktop a[data-dest]').forEach(el=>{
+    el.addEventListener('click',function(){
+      const d=this.dataset.dest;
+      if(d==='inicio')       irInicio();
+      else if(d==='videos')  irVideos();
+      else if(d==='sobrenos')irSobreNos();
+      else                   irCategoria(d);
+    });
+  });
+
+  // Rodapé
+  document.querySelectorAll('.ft-col a[data-dest]').forEach(el=>{
+    el.addEventListener('click',function(){
+      const d=this.dataset.dest;
+      if(d==='inicio')       irInicio();
+      else if(d==='videos')  irVideos();
+      else if(d==='sobrenos')irSobreNos();
+      else                   irCategoria(d);
+    });
+  });
+
+  // Página inicial ao carregar
+  const hash=location.hash;
+  if(hash&&hash.startsWith('#artigo-')) irArtigo(parseInt(hash.replace('#artigo-','')));
+  else if(hash&&NOMES[hash.replace('#','')]) irCategoria(hash.replace('#',''));
+  else if(hash==='#videos') irVideos();
+  else if(hash==='#sobre-nos') irSobreNos();
+  else irInicio();
+});
+</script>
+</body>
+</html>
